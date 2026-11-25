@@ -16,6 +16,11 @@ const { tool } = Astro.props;
     </span>
     <span class="receipt-no">{tool.no}</span>
   </div>
+  {tool.screenshot && (
+    <div class="receipt-img-wrap">
+      <img src={url(tool.screenshot.src)} alt={tool.screenshot.alt} class="receipt-img" loading="lazy" />
+    </div>
+  )}
   <h2 class="receipt-title">{tool.name}</h2>
   <p class="receipt-purpose">{tool.purpose}</p>
   <div class="receipt-lines">
@@ -39,6 +44,18 @@ const { tool } = Astro.props;
     gap: 14px;
     font-size: 13px;
     background: var(--color-canvas);
+  }
+  .receipt-img-wrap {
+    border: var(--rule);
+    background: var(--color-surface);
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+  }
+  .receipt-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
   }
   .receipt-top {
     display: flex;

@@ -7,6 +7,10 @@ series: "build-the-machine"
 gate: 3
 featured: false
 experimentStatus: "live"
+heroImage:
+  src: "images/eval-architecture.webp"
+  alt: "Quip 6-Plane Architecture and 4-Harness Automated Evaluation Scorecard"
+  caption: "LIVE HARNESS · 6 execution planes graded nightly across Skills, Routing, Mastery, and Structural Codebase Health."
 plainEnglishTerms:
   - term: "Isolated git worktrees"
     plain: "Separate, sandboxed copies of our codebase folder where an AI builder can write and test code for one ticket without colliding with another ticket."

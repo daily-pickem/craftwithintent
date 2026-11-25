@@ -1,5 +1,11 @@
 import { defineCollection, z } from 'astro:content';
 
+const imageSchema = z.object({
+  src: z.string(),
+  alt: z.string(),
+  caption: z.string(),
+});
+
 export const posts = defineCollection({
   type: 'content',
   schema: z.object({
@@ -19,6 +25,8 @@ export const posts = defineCollection({
     featured: z.boolean().default(false),
     experimentStatus: z.enum(['live', 'shipped', 'killed']).default('live'),
     product: z.string().optional(),
+    heroImage: imageSchema.optional(),
+    secondaryImage: imageSchema.optional(),
     plainEnglishTerms: z
       .array(
         z.object({

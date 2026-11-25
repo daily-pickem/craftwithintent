@@ -7,6 +7,10 @@ series: "get-a-job-with-ai"
 gate: 1
 featured: false
 experimentStatus: "live"
+heroImage:
+  src: "images/opensesame-trailer-ui.webp"
+  alt: "Open Sesame 30-second gameplay trailer UI and solver-verified safe lock mechanics"
+  caption: "PROOF OF WORK · Open Sesame 45-vault puzzle gameplay and interactive trailer staged before store launch."
 plainEnglishTerms:
   - term: "Proof-of-work shipping"
     plain: "A public, runnable product accompanied by real engineering trade-offs, test coverage, and post-launch lessons rather than a screenshot of a prompt."

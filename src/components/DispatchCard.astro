@@ -17,15 +17,25 @@ interface Props {
   gate?: number;
   authors: FounderId[];
   body: string;
+  heroImage?: {
+    src: string;
+    alt: string;
+    caption: string;
+  };
 }
 
-const { slug, title, dek, series, gate, authors, body } = Astro.props;
+const { slug, title, dek, series, gate, authors, body, heroImage } = Astro.props;
 const seriesMeta = SERIES_MAP[series];
 const firstAuthor = FOUNDERS[authors[0]];
 const readMin = calcReadMinutes(body);
 const authorLine = formatAuthors(authors, true);
 ---
 <a href={url(`posts/${slug}/`)} class="dispatch-card" data-series={series}>
+  {heroImage && (
+    <div class="dispatch-thumb-wrap">
+      <img src={url(heroImage.src)} alt={heroImage.alt} class="dispatch-thumb" loading="lazy" />
+    </div>
+  )}
   <div class="dispatch-meta mono">
     <span class="series-dot" style={`background: ${seriesMeta.color}`} />
     <span>{seriesMeta.name.toUpperCase()}{gate ? ` · GATE ${gate}` : ''}</span>
@@ -56,6 +66,19 @@ const authorLine = formatAuthors(authors, true);
     border-top: var(--rule);
     text-decoration: none;
     color: var(--color-ink);
+  }
+  .dispatch-thumb-wrap {
+    border: var(--rule);
+    background: var(--color-surface);
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    margin-bottom: 4px;
+  }
+  .dispatch-thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
   }
   .dispatch-card:hover .dispatch-title {
     color: var(--color-accent);

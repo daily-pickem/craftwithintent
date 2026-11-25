@@ -8,6 +8,14 @@ gate: 1
 featured: false
 experimentStatus: "live"
 product: "quackdown"
+heroImage:
+  src: "images/rig-lab.webp"
+  alt: "18-Actor Variation C Rig Lab interactive 2D skeletal joint studio"
+  caption: "WORKBENCH NO. 001 · Rig Lab 2D Skeletal Studio — locking puppet joint sockets before generating frames."
+secondaryImage:
+  src: "images/workbench-matrix.webp"
+  alt: "Daily Pick'em staging matrix showing concept demos, development builds, and live store apps"
+  caption: "PORTFOLIO MATRIX · Concept demos, development builds, and live store apps tracked across Gates 1–4."
 plainEnglishTerms:
   - term: "2D skeletal rigging studio (Rig Lab)"
     plain: "A digital paper-puppet board that snaps heads, arms, and props onto exact joint sockets instead of redrawing every video frame from scratch."

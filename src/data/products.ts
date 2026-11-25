@@ -12,6 +12,10 @@ export interface ProductItem {
   primaryCtaLabel?: string;
   primaryCtaUrl?: string;
   teardownSlug?: string;
+  screenshot?: {
+    src: string;
+    alt: string;
+  };
 }
 
 export const PRODUCTS: ProductItem[] = [
@@ -27,6 +31,10 @@ export const PRODUCTS: ProductItem[] = [
     primaryCtaLabel: 'Get the app',
     primaryCtaUrl: 'https://askquip.com',
     teardownSlug: 'ai-is-the-tool-craft-is-the-edge',
+    screenshot: {
+      src: 'images/askquip-web.webp',
+      alt: 'AskQuip children dictionary app homepage and camera word lookup showcase',
+    },
   },
   {
     slug: 'sortin-goods',
@@ -40,6 +48,10 @@ export const PRODUCTS: ProductItem[] = [
     primaryCtaLabel: 'Play / Store',
     primaryCtaUrl: 'https://sortingood.dailypickgames.com',
     teardownSlug: 'sortin-goods-holiday-game-shipped-and-measured',
+    screenshot: {
+      src: 'images/sortingood-web.webp',
+      alt: "Sortin' Goods holiday puzzle game homepage and live gameplay preview",
+    },
   },
   {
     slug: 'quackdown',
@@ -53,6 +65,10 @@ export const PRODUCTS: ProductItem[] = [
     primaryCtaLabel: 'View site',
     primaryCtaUrl: 'https://quackdown.dailypickem.net',
     teardownSlug: 'the-8-app-workbench-matrix',
+    screenshot: {
+      src: 'images/quackdown-web.webp',
+      alt: 'Quackdown horde survivor game storefront and playable portal preview',
+    },
   },
   {
     slug: 'open-sesame',
@@ -66,6 +82,10 @@ export const PRODUCTS: ProductItem[] = [
     primaryCtaLabel: 'Play slice',
     primaryCtaUrl: 'https://opensesame.dailypickem.net',
     teardownSlug: 'the-8-app-workbench-matrix',
+    screenshot: {
+      src: 'images/opensesame-web.webp',
+      alt: 'Open Sesame 45-vault puzzle game site and interactive dial trailer',
+    },
   },
   {
     slug: 'whitewater-co-pilot',

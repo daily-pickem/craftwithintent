@@ -8,6 +8,14 @@ gate: 1
 featured: true
 experimentStatus: "live"
 product: "askquip"
+heroImage:
+  src: "images/askquip-camera-qa.webp"
+  alt: "AskQuip 4-panel mobile QA verifying live camera OCR word scanning and voice search"
+  caption: "REAL RECEIPT · AskQuip v1.0.8 camera OCR and voice search QA captured from team build threads (built by Andy & Mike)."
+secondaryImage:
+  src: "images/domain-pricing-receipt.webp"
+  alt: "Domain pricing receipt comparing craftwithintent.com at $11.17/yr vs craftwithintent.ai at $160"
+  caption: "GATE 3 RECEIPT · Picking craftwithintent.com ($11.17/yr) over .ai ($160 two-year minimum) to protect early burn."
 pullQuote: "We are not selling a solved playbook. We are running a live experiment, and you get to watch the losing bets too."
 plainEnglishTerms:
   - term: "P90 cost per active user"

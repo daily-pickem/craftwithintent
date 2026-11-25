@@ -11,6 +11,11 @@ interface Props {
 const { product } = Astro.props;
 ---
 <div class="product-row">
+  {product.screenshot && (
+    <div class="product-thumb-wrap">
+      <img src={url(product.screenshot.src)} alt={product.screenshot.alt} class="product-thumb" loading="lazy" />
+    </div>
+  )}
   <div class="product-info">
     <h2 class="product-name">{product.name}</h2>
     <p class="product-line">{product.oneLiner}</p>
@@ -48,12 +53,25 @@ const { product } = Astro.props;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 16px 32px;
+    gap: 16px 28px;
     padding: var(--space-7) 0;
     border-top: var(--rule);
   }
+  .product-thumb-wrap {
+    flex: 0 0 220px;
+    border: var(--rule);
+    background: var(--color-surface);
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+  }
+  .product-thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+  }
   .product-info {
-    flex: 999 1 380px;
+    flex: 999 1 320px;
     min-width: 0;
     display: flex;
     flex-direction: column;
@@ -78,7 +96,7 @@ const { product } = Astro.props;
     letter-spacing: 0.04em;
   }
   .product-status {
-    flex: 1 1 180px;
+    flex: 1 1 170px;
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -93,7 +111,7 @@ const { product } = Astro.props;
     color: var(--color-ink-secondary);
   }
   .product-actions {
-    flex: 1 1 200px;
+    flex: 1 1 190px;
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
@@ -124,5 +142,10 @@ const { product } = Astro.props;
   .action-btn.is-secondary:hover {
     background: var(--color-surface);
     color: var(--color-ink);
+  }
+  @media (max-width: 767px) {
+    .product-thumb-wrap {
+      flex: 1 1 100%;
+    }
   }
 </style>

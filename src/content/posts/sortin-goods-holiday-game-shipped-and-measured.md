@@ -8,6 +8,10 @@ gate: 4
 featured: false
 experimentStatus: "shipped"
 product: "sortin-goods"
+heroImage:
+  src: "images/sortingood-storefront.webp"
+  alt: "Sortin' Goods Holiday Edition storefront gameplay capture"
+  caption: "SHIPPED ARTIFACT · Sortin' Goods Holiday Edition live gameplay loop captured for App Store and Google Play."
 plainEnglishTerms:
   - term: "Dual-engine game distribution"
     plain: "Pairing organic App Store search optimization and playable web previews with short-form video tests across 11 localized store markets."

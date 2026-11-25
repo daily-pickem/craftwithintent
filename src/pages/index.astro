@@ -115,6 +115,7 @@ const previewTool = TOOLS[0];
           gate={post.data.gate}
           authors={post.data.authors}
           body={post.body}
+          heroImage={post.data.heroImage}
         />
       ))}
     </div>
@@ -138,6 +139,11 @@ const previewTool = TOOLS[0];
       <div class="artifacts-grid">
         {previewProducts.map((prod) => (
           <a href={url('products/')} class="artifact-card">
+            {prod.screenshot && (
+              <div class="artifact-shot-wrap">
+                <img src={url(prod.screenshot.src)} alt={prod.screenshot.alt} class="artifact-shot" loading="lazy" />
+              </div>
+            )}
             <div class="artifact-top mono">
               <span class="artifact-kind">PRODUCT</span>
               <span class="artifact-badge">{prod.statusLabel}</span>
@@ -148,6 +154,11 @@ const previewTool = TOOLS[0];
         ))}
 
         <a href={url('tools/')} class="artifact-card is-tool">
+          {previewTool.screenshot && (
+            <div class="artifact-shot-wrap">
+              <img src={url(previewTool.screenshot.src)} alt={previewTool.screenshot.alt} class="artifact-shot" loading="lazy" />
+            </div>
+          )}
           <div class="artifact-top mono">
             <span class="artifact-kind">WORKBENCH · RECEIPT</span>
             <span class="artifact-cogs">{previewTool.cogs}</span>
@@ -465,6 +476,18 @@ const previewTool = TOOLS[0];
   }
   .artifact-card.is-tool {
     border: var(--rule-strong);
+  }
+  .artifact-shot-wrap {
+    border: var(--rule);
+    background: var(--color-surface);
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+  }
+  .artifact-shot {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
   }
   .artifact-card:hover .artifact-name {
     color: var(--color-accent);

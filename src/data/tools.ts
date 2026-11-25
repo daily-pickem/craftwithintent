@@ -8,6 +8,10 @@ export interface ToolReceipt {
   workbench: string;
   cogs: string;
   postSlug: string;
+  screenshot?: {
+    src: string;
+    alt: string;
+  };
 }
 
 export const TOOLS: ToolReceipt[] = [
@@ -21,6 +25,10 @@ export const TOOLS: ToolReceipt[] = [
     workbench: '2 days',
     cogs: '$0.00 / MO',
     postSlug: 'the-8-app-workbench-matrix',
+    screenshot: {
+      src: 'images/rig-lab.webp',
+      alt: 'Rig Lab 2D skeletal rigging workbench showing puppet joint sockets and keyframes',
+    },
   },
   {
     no: 'NO. 002',
@@ -32,6 +40,10 @@ export const TOOLS: ToolReceipt[] = [
     workbench: '1 day',
     cogs: '$0.00 / MO',
     postSlug: 'the-8-app-workbench-matrix',
+    screenshot: {
+      src: 'images/opensesame-trailer-ui.webp',
+      alt: 'Open Sesame solver-verified vault mechanics and interactive trailer preview',
+    },
   },
   {
     no: 'NO. 003',
@@ -43,6 +55,10 @@ export const TOOLS: ToolReceipt[] = [
     workbench: '4 days',
     cogs: '$0.00 / MO',
     postSlug: 'autonomous-slack-agent-four-eval-harnesses',
+    screenshot: {
+      src: 'images/askquip-camera-qa.webp',
+      alt: '4-panel real-device camera word scanner and voice search QA verification',
+    },
   },
   {
     no: 'NO. 004',
@@ -54,6 +70,10 @@ export const TOOLS: ToolReceipt[] = [
     workbench: '3 days',
     cogs: '$0.00 / MO',
     postSlug: 'autonomous-slack-agent-four-eval-harnesses',
+    screenshot: {
+      src: 'images/eval-architecture.webp',
+      alt: '6-Plane codebase architecture and automated evaluation fitness dashboard',
+    },
   },
   {
     no: 'NO. 005',

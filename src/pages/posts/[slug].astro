@@ -68,9 +68,23 @@ const nextPost = sameSeries[0] || allPosts.find((p) => p.slug !== post.slug);
       <span class="byline-date mono">{dateStr} · {readMin} MIN READ</span>
     </div>
 
+    {post.data.heroImage && (
+      <figure class="post-figure">
+        <img src={url(post.data.heroImage.src)} alt={post.data.heroImage.alt} class="post-figure-img" />
+        <figcaption class="post-figure-cap mono">{post.data.heroImage.caption}</figcaption>
+      </figure>
+    )}
+
     <div class="prose">
       <Content />
     </div>
+
+    {post.data.secondaryImage && (
+      <figure class="post-figure">
+        <img src={url(post.data.secondaryImage.src)} alt={post.data.secondaryImage.alt} class="post-figure-img" loading="lazy" />
+        <figcaption class="post-figure-cap mono">{post.data.secondaryImage.caption}</figcaption>
+      </figure>
+    )}
 
     {post.data.pullQuote && (
       <blockquote class="post-pullquote">
@@ -188,6 +202,23 @@ const nextPost = sameSeries[0] || allPosts.find((p) => p.slug !== post.slug);
   .byline-date {
     font-size: var(--text-meta);
     color: var(--color-ink-secondary);
+  }
+  .post-figure {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .post-figure-img {
+    width: 100%;
+    height: auto;
+    border: var(--rule);
+    background: var(--color-surface);
+  }
+  .post-figure-cap {
+    font-size: var(--text-meta);
+    color: var(--color-ink-secondary);
+    line-height: 1.45;
   }
   .post-pullquote {
     margin: 8px 0;
