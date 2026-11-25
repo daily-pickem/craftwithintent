@@ -1,0 +1,39 @@
+---
+import type { ProductStatus } from '../data/products';
+
+interface Props {
+  status: ProductStatus;
+  label: string;
+}
+
+const { status, label } = Astro.props;
+---
+<span class:list={['status-tag mono', `is-${status}`]}>{label}</span>
+
+<style>
+  .status-tag {
+    align-self: flex-start;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    padding: 5px 9px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .status-tag.is-live {
+    background: var(--color-ink);
+    color: var(--color-canvas);
+  }
+  .status-tag.is-beta {
+    border: var(--rule-strong);
+    color: var(--color-ink);
+  }
+  .status-tag.is-open-source {
+    border: 1px solid var(--status-success);
+    color: var(--status-success);
+  }
+  .status-tag.is-killed {
+    border: var(--rule);
+    color: var(--color-ink-secondary);
+    text-decoration: line-through;
+  }
+</style>

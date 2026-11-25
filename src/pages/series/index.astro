@@ -1,0 +1,143 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SERIES_LIST, url } from '../../lib/site';
+
+const posts = await getCollection('posts');
+---
+<BaseLayout
+  title="Series — Craft with Intent"
+  description="Five plain-English editorial series tracking our live product experiments, workbenches, and proof-of-work builds."
+  current="series"
+  subscribeId="series-index-email"
+>
+  <section class="series-index-hero">
+    <div class="container hero-copy">
+      <span class="meta-label">FIVE EDITORIAL TRACKS</span>
+      <h1 class="page-h1">Series</h1>
+      <p class="page-intro">Each dispatch belongs to one of five plain-English tracks, grounded in real shipped products and transparent engineering trade-offs.</p>
+    </div>
+  </section>
+
+  <section class="container series-rows">
+    {SERIES_LIST.map((s) => {
+      const count = posts.filter((p) => p.data.series === s.slug).length;
+      return (
+        <a href={url(`series/${s.slug}/`)} class="series-row">
+          <div class="series-row-left">
+            <div class="series-row-meta mono">
+              <span class="series-dot series-dot-lg" style={`background: ${s.color}`} />
+              <span>SERIES {s.index} OF {SERIES_LIST.length}</span>
+            </div>
+            <h2 class="series-row-name">{s.name}</h2>
+            <p class="series-row-sub">{s.subtitle}</p>
+            <p class="series-row-thesis">{s.thesis}</p>
+          </div>
+          <div class="series-row-right mono">
+            <span>{count} {count === 1 ? 'DISPATCH' : 'DISPATCHES'}</span>
+            <span class="series-go">Read series →</span>
+          </div>
+        </a>
+      );
+    })}
+    <div class="rows-end" />
+  </section>
+</BaseLayout>
+
+<style>
+  .series-index-hero {
+    border-bottom: var(--rule-strong);
+  }
+  .hero-copy {
+    padding-top: var(--space-16);
+    padding-bottom: var(--space-14);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .page-h1 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--text-display);
+    line-height: 1;
+    letter-spacing: var(--tracking-display);
+  }
+  .page-intro {
+    margin: 0;
+    font-size: var(--text-body-lg);
+    line-height: 1.65;
+    color: var(--color-ink-secondary);
+    max-width: 62ch;
+  }
+  .series-rows {
+    padding-top: var(--space-6);
+    padding-bottom: 80px;
+    display: flex;
+    flex-direction: column;
+  }
+  .series-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px 32px;
+    padding: 30px 0;
+    border-top: var(--rule);
+    text-decoration: none;
+    color: var(--color-ink);
+  }
+  .series-row:hover .series-row-name { color: var(--color-accent); }
+  .series-row-left {
+    flex: 999 1 560px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .series-row-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: var(--text-meta);
+    letter-spacing: var(--tracking-meta);
+    color: var(--color-ink-secondary);
+  }
+  .series-row-name {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 32px;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+  }
+  .series-row-sub {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 24px;
+    line-height: 1.25;
+  }
+  .series-row-thesis {
+    margin: 0;
+    font-size: var(--text-body);
+    line-height: 1.6;
+    color: var(--color-ink-secondary);
+    max-width: 62ch;
+  }
+  .series-row-right {
+    flex: 1 1 160px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    font-size: var(--text-meta);
+    color: var(--color-ink-secondary);
+  }
+  .series-go {
+    color: var(--color-accent);
+    font-weight: 500;
+  }
+  .rows-end { border-top: var(--rule); }
+  @media (max-width: 767px) {
+    .series-row-right { align-items: flex-start; }
+  }
+</style>

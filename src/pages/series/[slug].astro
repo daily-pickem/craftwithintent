@@ -1,0 +1,247 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import GateLedger from '../../components/GateLedger.astro';
+import {
+  SERIES_LIST,
+  calcReadMinutes,
+  formatAuthors,
+  url,
+} from '../../lib/site';
+
+export async function getStaticPaths() {
+  return SERIES_LIST.map((series) => ({
+    params: { slug: series.slug },
+    props: { series },
+  }));
+}
+
+const { series } = Astro.props;
+const allPosts = (await getCollection('posts')).sort(
+  (a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime()
+);
+const posts = allPosts.filter((p) => p.data.series === series.slug);
+const otherSeries = SERIES_LIST.filter((s) => s.slug !== series.slug);
+---
+<BaseLayout
+  title={`${series.name} — Craft with Intent`}
+  description={series.thesis}
+  current="series"
+  subscribeId={`series-email-${series.slug}`}
+>
+  <section class="series-hero">
+    <div class="container series-hero-inner">
+      <div class="series-eyebrow mono">
+        <span class="series-dot series-dot-lg" style={`background: ${series.color}`} />
+        <span>SERIES {series.index} OF {SERIES_LIST.length}</span>
+      </div>
+      <h1 class="series-title">{series.name}</h1>
+      <p class="series-sub">{series.subtitle}</p>
+      <p class="series-thesis">{series.thesis}</p>
+    </div>
+  </section>
+
+  <section class="container series-body">
+    <div class="series-main">
+      <div class="series-main-head">
+        <h2 class="dispatches-h2">Dispatches</h2>
+        <span class="series-count mono">{posts.length} IN THIS SERIES</span>
+      </div>
+
+      {posts.length > 0 ? (
+        posts.map((post) => (
+          <a href={url(`posts/${post.slug}/`)} class="series-dispatch-row">
+            <div class="row-copy">
+              <span class="row-title">{post.data.title}</span>
+              <span class="row-dek">{post.data.dek}</span>
+              <span class="row-byline">
+                {formatAuthors(post.data.authors, true)}{' '}
+                <span class="row-min mono">· {calcReadMinutes(post.body)} MIN</span>
+              </span>
+            </div>
+            {post.data.gate && (
+              <div class="row-gate">
+                <GateLedger current={post.data.gate as 1 | 2 | 3 | 4} size="small" />
+                <span class="row-gate-lbl mono">GATE {post.data.gate}</span>
+              </div>
+            )}
+          </a>
+        ))
+      ) : (
+        <div class="series-empty">First dispatch coming soon.</div>
+      )}
+    </div>
+
+    <aside class="other-series" aria-label="Other series">
+      <span class="other-eyebrow mono">OTHER SERIES</span>
+      {otherSeries.map((other) => (
+        <a href={url(`series/${other.slug}/`)} class="other-row">
+          <span class="series-dot" style={`background: ${other.color}`} />
+          <span>{other.name}</span>
+          <span class="other-tag">{other.shortTag}</span>
+        </a>
+      ))}
+    </aside>
+  </section>
+</BaseLayout>
+
+<style>
+  .series-hero {
+    border-bottom: var(--rule-strong);
+  }
+  .series-hero-inner {
+    padding-top: var(--space-16);
+    padding-bottom: var(--space-14);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .series-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: var(--text-meta);
+    letter-spacing: var(--tracking-meta);
+    color: var(--color-ink-secondary);
+  }
+  .series-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(40px, 6vw, 76px);
+    line-height: 1;
+    letter-spacing: var(--tracking-display);
+  }
+  .series-sub {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: clamp(24px, 2.6vw, 32px);
+    line-height: 1.2;
+  }
+  .series-thesis {
+    margin: 0;
+    font-size: var(--text-body-lg);
+    line-height: 1.65;
+    color: var(--color-ink-secondary);
+    max-width: 62ch;
+  }
+
+  .series-body {
+    padding-top: var(--space-12);
+    padding-bottom: var(--space-18);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-14);
+  }
+  .series-main {
+    flex: 999 1 560px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .series-main-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-bottom: 12px;
+  }
+  .dispatches-h2 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 26px;
+    letter-spacing: var(--tracking-h2);
+  }
+  .series-count {
+    font-size: var(--text-meta);
+    color: var(--color-ink-secondary);
+  }
+  .series-dispatch-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px 24px;
+    align-items: start;
+    padding: 26px 0;
+    border-top: var(--rule);
+    text-decoration: none;
+    color: var(--color-ink);
+  }
+  .series-dispatch-row:hover .row-title { color: var(--color-accent); }
+  .row-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .row-title {
+    font-weight: 600;
+    font-size: 22px;
+    line-height: 1.25;
+  }
+  .row-dek {
+    font-size: var(--text-body);
+    line-height: 1.5;
+    color: var(--color-ink-secondary);
+  }
+  .row-byline {
+    font-size: var(--text-small);
+  }
+  .row-min {
+    font-size: var(--text-micro);
+    color: var(--color-ink-secondary);
+  }
+  .row-gate {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+  }
+  .row-gate-lbl {
+    font-size: var(--text-micro);
+    color: var(--color-ink-secondary);
+  }
+  .series-empty {
+    padding: 26px 0;
+    border-top: var(--rule);
+    color: var(--color-ink-secondary);
+  }
+
+  .other-series {
+    flex: 1 1 300px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .other-eyebrow {
+    font-size: var(--text-micro);
+    letter-spacing: var(--tracking-meta);
+    color: var(--color-ink-secondary);
+    padding-bottom: 8px;
+  }
+  .other-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 0;
+    border-top: var(--rule);
+    text-decoration: none;
+    color: var(--color-ink);
+    font-size: 15px;
+    font-weight: 500;
+  }
+  .other-row:hover { color: var(--color-accent); }
+  .other-tag {
+    margin-left: auto;
+    font-size: 13px;
+    color: var(--color-ink-secondary);
+    font-weight: 400;
+  }
+  @media (max-width: 600px) {
+    .series-dispatch-row {
+      grid-template-columns: 1fr;
+    }
+    .row-gate {
+      align-items: flex-start;
+      flex-direction: row;
+    }
+  }
+</style>

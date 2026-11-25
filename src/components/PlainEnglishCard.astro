@@ -1,0 +1,54 @@
+---
+interface Props {
+  term: string;
+  plain: string;
+  why: string;
+}
+
+const { term, plain, why } = Astro.props;
+---
+<aside class="plain-card">
+  <span class="plain-eyebrow mono">IN PLAIN ENGLISH &amp; WHY IT MATTERS</span>
+  <span class="plain-term">{term}</span>
+  <p class="plain-text"><strong>In plain English:</strong> {plain}</p>
+  <p class="plain-why"><strong>Why it matters:</strong> {why}</p>
+</aside>
+
+<style>
+  .plain-card {
+    background: var(--color-surface);
+    padding: 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .plain-eyebrow {
+    font-size: var(--text-micro);
+    letter-spacing: var(--tracking-meta);
+    color: var(--color-accent);
+  }
+  .plain-term {
+    font-family: var(--font-display);
+    font-size: 21px;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: var(--color-ink);
+  }
+  .plain-text {
+    margin: 0;
+    font-size: var(--text-body);
+    line-height: 1.55;
+    color: var(--color-ink);
+    max-width: var(--measure);
+  }
+  .plain-why {
+    margin: 0;
+    font-size: var(--text-body);
+    line-height: 1.55;
+    color: var(--color-ink-secondary);
+    max-width: var(--measure);
+  }
+  .plain-why strong {
+    color: var(--color-ink);
+  }
+</style>

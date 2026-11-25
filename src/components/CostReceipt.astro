@@ -1,0 +1,110 @@
+---
+import { url } from '../lib/site';
+import type { ToolReceipt } from '../data/tools';
+
+interface Props {
+  tool: ToolReceipt;
+}
+
+const { tool } = Astro.props;
+---
+<article class="cost-receipt mono">
+  <div class="receipt-top">
+    <span class="receipt-kind">
+      <span class="series-dot" style="background: #8A5E24" />
+      PRE-AI COST RECEIPT
+    </span>
+    <span class="receipt-no">{tool.no}</span>
+  </div>
+  <h2 class="receipt-title">{tool.name}</h2>
+  <p class="receipt-purpose">{tool.purpose}</p>
+  <div class="receipt-lines">
+    <div class="receipt-row"><span>Buy / license</span><span>{tool.buy || '—'}</span></div>
+    <div class="receipt-row"><span>Build, pre-AI</span><span>{tool.buildPre || '—'}</span></div>
+    <div class="receipt-row"><span>Our workbench</span><span>{tool.workbench || '—'}</span></div>
+  </div>
+  <div class="receipt-total">
+    <span>RUNNING COGS</span>
+    <span class="receipt-cogs">{tool.cogs}</span>
+  </div>
+  <a href={url(`posts/${tool.postSlug}/`)} class="receipt-link">Read the build log →</a>
+</article>
+
+<style>
+  .cost-receipt {
+    border: var(--rule-strong);
+    padding: 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    font-size: 13px;
+    background: var(--color-canvas);
+  }
+  .receipt-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: var(--text-micro);
+    letter-spacing: var(--tracking-meta);
+  }
+  .receipt-kind {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--color-ink);
+  }
+  .receipt-no {
+    color: var(--color-ink-secondary);
+  }
+  .receipt-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 22px;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: var(--color-ink);
+  }
+  .receipt-purpose {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--color-ink-secondary);
+  }
+  .receipt-lines {
+    border-top: 1px dashed var(--color-ink-tertiary);
+    padding-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+  .receipt-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    color: var(--color-ink);
+  }
+  .receipt-total {
+    border-top: var(--rule-strong);
+    padding-top: 12px;
+    display: flex;
+    justify-content: space-between;
+    font-weight: 500;
+    color: var(--color-ink);
+  }
+  .receipt-cogs {
+    color: var(--color-accent);
+  }
+  .receipt-link {
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: var(--text-small);
+    color: var(--color-ink);
+    padding: 8px 0;
+    text-decoration: none;
+    align-self: flex-start;
+  }
+  .receipt-link:hover {
+    color: var(--color-accent);
+  }
+</style>

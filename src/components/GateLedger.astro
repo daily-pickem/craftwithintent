@@ -1,0 +1,75 @@
+---
+import { GATE_PHASES } from '../lib/site';
+
+interface Props {
+  current?: 1 | 2 | 3 | 4;
+  size?: 'full' | 'small';
+}
+
+const { current, size = 'full' } = Astro.props;
+---
+{current && size === 'full' && (
+  <div class="gate-ledger-full" role="img" aria-label={`Currently at gate ${current} of 4`}>
+    {GATE_PHASES.map((phase) => {
+      const state = phase.gate < current ? 'passed' : phase.gate === current ? 'now' : 'future';
+      return (
+        <div class="gate-col">
+          <div class:list={['gate-bar', `is-${state}`]} />
+          <span class:list={['gate-lbl mono', `is-${state}`]}>
+            {state === 'now' ? `GATE ${phase.gate} · NOW` : `GATE ${phase.gate}`}
+          </span>
+        </div>
+      );
+    })}
+  </div>
+)}
+
+{current && size === 'small' && (
+  <span class="gate-ledger-small" role="img" aria-label={`Gate ${current} of 4`}>
+    {[1, 2, 3, 4].map((g) => {
+      const state = g < current ? 'passed' : g === current ? 'now' : 'future';
+      return <span class:list={['gate-seg', `is-${state}`]} />;
+    })}
+  </span>
+)}
+
+<style>
+  .gate-ledger-full {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 4px;
+  }
+  .gate-col {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .gate-bar {
+    height: var(--gate-bar);
+  }
+  .gate-bar.is-passed { background: var(--color-ink); }
+  .gate-bar.is-now { background: var(--color-accent); }
+  .gate-bar.is-future { background: var(--color-hairline); }
+
+  .gate-lbl {
+    font-size: var(--text-micro);
+    letter-spacing: 0.06em;
+    color: var(--color-ink-secondary);
+  }
+  .gate-lbl.is-now {
+    color: var(--color-accent);
+    font-weight: 500;
+  }
+
+  .gate-ledger-small {
+    display: inline-flex;
+    gap: 3px;
+  }
+  .gate-seg {
+    width: 26px;
+    height: 6px;
+  }
+  .gate-seg.is-passed { background: var(--color-ink); }
+  .gate-seg.is-now { background: var(--color-accent); }
+  .gate-seg.is-future { background: var(--color-hairline); }
+</style>

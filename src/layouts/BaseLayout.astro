@@ -1,0 +1,87 @@
+---
+import '../styles/tokens.css';
+import '../styles/global.css';
+import SiteHeader, { type NavSection } from '../components/SiteHeader.astro';
+import SubscribeBand from '../components/SubscribeBand.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import { url } from '../lib/site';
+
+interface Props {
+  title: string;
+  description?: string;
+  current?: NavSection;
+  ogImage?: string;
+  subscribeId?: string;
+}
+
+const {
+  title,
+  description = 'Three veteran builders putting design, engineering, and product craft to work with AI in public.',
+  current,
+  ogImage = 'og/default.png',
+  subscribeId = 'site-subscribe-email',
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site || 'https://craftwithintent.com').toString();
+const ogUrl = new URL(url(ogImage), Astro.site || 'https://craftwithintent.com').toString();
+
+const fontCss = `
+@font-face { font-family: "Archivo Black"; src: url("${url('fonts/ArchivoBlack-Regular.woff2')}") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Archivo"; src: url("${url('fonts/Archivo-Variable.woff2')}") format("woff2"); font-weight: 100 900; font-display: swap; }
+@font-face { font-family: "Instrument Serif"; src: url("${url('fonts/InstrumentSerif-Regular.woff2')}") format("woff2"); font-style: normal; font-display: swap; }
+@font-face { font-family: "Instrument Serif"; src: url("${url('fonts/InstrumentSerif-Italic.woff2')}") format("woff2"); font-style: italic; font-display: swap; }
+@font-face { font-family: "IBM Plex Mono"; src: url("${url('fonts/IBMPlexMono-Regular.woff2')}") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "IBM Plex Mono"; src: url("${url('fonts/IBMPlexMono-Medium.woff2')}") format("woff2"); font-weight: 500; font-display: swap; }
+@font-face { font-family: "Fraunces"; src: url("${url('fonts/Fraunces-Variable.woff2')}") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }
+@font-face { font-family: "Fraunces"; src: url("${url('fonts/Fraunces-Italic-Variable.woff2')}") format("woff2"); font-weight: 100 900; font-style: italic; font-display: swap; }
+`;
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{title}</title>
+  <meta name="description" content={description}>
+  <link rel="canonical" href={canonical}>
+  <link rel="icon" href={url('favicon.ico')} sizes="32x32">
+  <link rel="icon" href={url('favicon.svg')} type="image/svg+xml">
+  <link rel="apple-touch-icon" href={url('apple-touch-icon.png')}>
+  <link rel="manifest" href={url('site.webmanifest')}>
+  <meta name="theme-color" content="#FFFFFF">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content={title}>
+  <meta property="og:description" content={description}>
+  <meta property="og:url" content={canonical}>
+  <meta property="og:image" content={ogUrl}>
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content={title}>
+  <meta name="twitter:description" content={description}>
+  <meta name="twitter:image" content={ogUrl}>
+  <link rel="alternate" type="application/rss+xml" title="Craft with Intent RSS" href={url('rss.xml')}>
+  <style set:html={fontCss}></style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <div class="site-shell">
+    <SiteHeader current={current} />
+    <main id="main-content">
+      <slot />
+    </main>
+    <SubscribeBand inputId={subscribeId} />
+    <SiteFooter />
+  </div>
+</body>
+</html>
+
+<style>
+  .site-shell {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--color-canvas);
+  }
+  main {
+    flex: 1;
+  }
+</style>

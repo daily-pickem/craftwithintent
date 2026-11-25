@@ -1,0 +1,271 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import GateLedger from '../../components/GateLedger.astro';
+import PlainEnglishCard from '../../components/PlainEnglishCard.astro';
+import TradeoffTable from '../../components/TradeoffTable.astro';
+import InlineSubscribe from '../../components/InlineSubscribe.astro';
+import {
+  SERIES_MAP,
+  FOUNDERS,
+  calcReadMinutes,
+  formatMonoDate,
+  url,
+} from '../../lib/site';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts');
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+const seriesMeta = SERIES_MAP[post.data.series];
+const readMin = calcReadMinutes(post.body);
+const dateStr = formatMonoDate(post.data.publishedAt);
+
+const allPosts = (await getCollection('posts')).sort(
+  (a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime()
+);
+const sameSeries = allPosts.filter((p) => p.data.series === post.data.series && p.slug !== post.slug);
+const nextPost = sameSeries[0] || allPosts.find((p) => p.slug !== post.slug);
+---
+<BaseLayout
+  title={`${post.data.title} — Craft with Intent`}
+  description={post.data.dek}
+  current="essays"
+  ogImage={`og/${post.slug}.png`}
+  subscribeId={`post-footer-email-${post.slug}`}
+>
+  <article class="container-article post-article">
+    <a href={url('#dispatches')} class="back-link mono">← ALL DISPATCHES</a>
+
+    <div class="post-meta mono">
+      <span class="series-dot" style={`background: ${seriesMeta.color}`} />
+      <a href={url(`series/${seriesMeta.slug}/`)} class="post-series-link">{seriesMeta.name.toUpperCase()}</a>
+      {post.data.experimentStatus === 'live' && <span class="live-tag">LIVE EXPERIMENT</span>}
+    </div>
+
+    {post.data.gate && <GateLedger current={post.data.gate as 1 | 2 | 3 | 4} size="full" />}
+
+    <h1 class="post-title">{post.data.title}</h1>
+    <p class="post-dek">{post.data.dek}</p>
+
+    <div class="byline-bar">
+      <div class="byline-authors">
+        {post.data.authors.map((id) => {
+          const f = FOUNDERS[id];
+          return (
+            <span>
+              <strong>{f.name}</strong> <span class="byline-lens">· {f.lens}</span>
+            </span>
+          );
+        })}
+      </div>
+      <span class="byline-date mono">{dateStr} · {readMin} MIN READ</span>
+    </div>
+
+    <div class="prose">
+      <Content />
+    </div>
+
+    {post.data.pullQuote && (
+      <blockquote class="post-pullquote">
+        {post.data.pullQuote}
+      </blockquote>
+    )}
+
+    {post.data.plainEnglishTerms.length > 0 && (
+      <div class="plain-stack">
+        {post.data.plainEnglishTerms.map((item) => (
+          <PlainEnglishCard term={item.term} plain={item.plain} why={item.why} />
+        ))}
+      </div>
+    )}
+
+    {post.data.tradeoffTable && (
+      <section class="tradeoff-section">
+        {post.data.tradeoffTable.caption && (
+          <h2 class="tradeoff-heading">{post.data.tradeoffTable.caption}</h2>
+        )}
+        <TradeoffTable rows={post.data.tradeoffTable.rows} />
+      </section>
+    )}
+
+    <div class="authors-strip">
+      {post.data.authors.map((id) => {
+        const f = FOUNDERS[id];
+        return (
+          <div class="author-mini">
+            <span class="avatar-circle avatar-md" style={`background: ${f.avatarBg}`}>{f.initials}</span>
+            <div class="author-mini-copy">
+              <strong>{f.name}</strong>
+              <span>{f.shortLine}</span>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+
+    {nextPost && (
+      <a href={url(`posts/${nextPost.slug}/`)} class="next-card">
+        <span class="next-eyebrow mono">NEXT IN {SERIES_MAP[nextPost.data.series].name.toUpperCase()} →</span>
+        <span class="next-title">{nextPost.data.title}</span>
+        <span class="next-dek">{nextPost.data.dek}</span>
+      </a>
+    )}
+
+    <InlineSubscribe />
+  </article>
+</BaseLayout>
+
+<style>
+  .post-article {
+    padding-top: var(--space-12);
+    padding-bottom: var(--space-14);
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+  }
+  .back-link {
+    font-size: var(--text-meta);
+    letter-spacing: 0.06em;
+    color: var(--color-ink-secondary);
+    text-decoration: none;
+    padding: 10px 0;
+    align-self: flex-start;
+  }
+  .back-link:hover { color: var(--color-accent); }
+  .post-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    font-size: var(--text-meta);
+    letter-spacing: var(--tracking-meta);
+  }
+  .post-series-link {
+    color: var(--color-ink-secondary);
+    text-decoration: none;
+  }
+  .post-series-link:hover { color: var(--color-accent); }
+  .post-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--text-h1-post);
+    line-height: 1.02;
+    letter-spacing: var(--tracking-display);
+  }
+  .post-dek {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: clamp(21px, 2.4vw, 27px);
+    line-height: 1.3;
+    color: var(--color-ink-secondary);
+  }
+  .byline-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 18px 0;
+    border-top: var(--rule-strong);
+    border-bottom: var(--rule);
+  }
+  .byline-authors {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    font-size: var(--text-small);
+  }
+  .byline-lens {
+    color: var(--color-ink-secondary);
+  }
+  .byline-date {
+    font-size: var(--text-meta);
+    color: var(--color-ink-secondary);
+  }
+  .post-pullquote {
+    margin: 8px 0;
+    padding: 4px 0 4px 24px;
+    border-left: 3px solid var(--color-accent);
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: var(--text-quote);
+    line-height: 1.25;
+    max-width: var(--measure);
+  }
+  .plain-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .tradeoff-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .tradeoff-heading {
+    margin: 8px 0 0;
+    font-family: var(--font-display);
+    font-size: var(--text-h2-post);
+    line-height: 1.15;
+    letter-spacing: var(--tracking-h2);
+  }
+  .authors-strip {
+    margin-top: 24px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
+    gap: 16px;
+    padding-top: var(--space-7);
+    border-top: var(--rule-strong);
+  }
+  .author-mini {
+    display: flex;
+    gap: 12px;
+  }
+  .avatar-md {
+    width: 40px;
+    height: 40px;
+    font-size: 13px;
+  }
+  .author-mini-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 13px;
+    line-height: 1.45;
+  }
+  .author-mini-copy strong { font-size: 15px; }
+  .author-mini-copy span { color: var(--color-ink-secondary); }
+
+  .next-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 24px;
+    border: var(--rule-strong);
+    text-decoration: none;
+    color: var(--color-ink);
+  }
+  .next-card:hover .next-title { color: var(--color-accent); }
+  .next-eyebrow {
+    font-size: var(--text-micro);
+    letter-spacing: 0.06em;
+    color: var(--color-ink-secondary);
+  }
+  .next-title {
+    font-weight: 600;
+    font-size: 22px;
+    line-height: 1.25;
+  }
+  .next-dek {
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--color-ink-secondary);
+  }
+</style>

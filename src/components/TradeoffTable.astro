@@ -1,0 +1,94 @@
+---
+export interface TradeoffRow {
+  option: string;
+  cost: string;
+  lockIn: string;
+  verdict: string;
+  selected?: boolean;
+  rejected?: boolean;
+}
+
+interface Props {
+  rows: TradeoffRow[];
+}
+
+const { rows } = Astro.props;
+---
+<div class="tradeoff-wrap">
+  <table class="tradeoff-table">
+    <thead>
+      <tr class="mono">
+        <th>OPTION</th>
+        <th>INFRA COST</th>
+        <th>LOCK-IN</th>
+        <th>VERDICT</th>
+      </tr>
+    </thead>
+    <tbody>
+      {rows.map((row) => (
+        <tr class:list={[{ 'is-selected': row.selected }]}>
+          <td class="opt-cell">{row.option}</td>
+          <td class="cost-cell mono">{row.cost}</td>
+          <td>{row.lockIn}</td>
+          <td class:list={['verdict-cell', { 'is-selected': row.selected, 'is-rejected': row.rejected }]}>
+            {row.verdict}
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+<style>
+  .tradeoff-wrap {
+    overflow-x: auto;
+    border-top: var(--rule-strong);
+  }
+  .tradeoff-table {
+    width: 100%;
+    min-width: 560px;
+    border-collapse: collapse;
+    font-size: var(--text-small);
+    line-height: 1.45;
+  }
+  thead tr {
+    font-size: var(--text-micro);
+    letter-spacing: 0.06em;
+    color: var(--color-ink-secondary);
+    text-align: left;
+  }
+  th {
+    padding: 12px;
+    font-weight: 500;
+  }
+  th:first-child { padding-left: 0; }
+  th:last-child { padding-right: 0; }
+
+  tbody tr {
+    border-top: var(--rule);
+  }
+  tbody tr:last-child {
+    border-bottom: var(--rule);
+  }
+  tbody tr.is-selected {
+    background: var(--color-surface);
+  }
+  td {
+    padding: 12px;
+    vertical-align: top;
+  }
+  td:first-child { padding-left: 0; }
+  tbody tr.is-selected td:first-child { padding-left: 8px; }
+  td:last-child { padding-right: 0; }
+
+  .opt-cell { font-weight: 600; }
+  .verdict-cell { color: var(--color-ink-secondary); }
+  .verdict-cell.is-selected {
+    color: var(--status-success);
+    font-weight: 600;
+  }
+  .verdict-cell.is-rejected {
+    color: var(--color-accent);
+    font-weight: 600;
+  }
+</style>

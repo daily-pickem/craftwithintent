@@ -1,0 +1,230 @@
+---
+import { url } from '../lib/site';
+
+interface Props {
+  inputId?: string;
+}
+
+const { inputId = 'site-subscribe-email' } = Astro.props;
+const errId = `${inputId}-error`;
+const statusId = `${inputId}-status`;
+---
+<section id="subscribe" class="subscribe-band">
+  <div class="container subscribe-inner">
+    <div class="subscribe-copy">
+      <span class="subscribe-eyebrow mono">THE DISPATCH</span>
+      <h2 class="subscribe-title">Watch us try, in your inbox.</h2>
+      <p class="subscribe-desc">One email when something ships, breaks, or earns its first dollar. No spam, no guru funnels. Unsubscribe in one click.</p>
+    </div>
+
+    <form class="subscribe-form" data-subscribe-form action={url('api/subscribe')} method="post" novalidate>
+      <label for={inputId} class="subscribe-label mono">EMAIL ADDRESS</label>
+      <input
+        id={inputId}
+        name="email"
+        type="email"
+        autocomplete="email"
+        placeholder="you@example.com"
+        class="subscribe-input"
+        aria-describedby={errId}
+      />
+      <input type="text" name="website" tabindex="-1" autocomplete="off" class="hp-field" aria-hidden="true" />
+      <button type="submit" class="subscribe-btn">Subscribe</button>
+      <p id={errId} class="subscribe-error" hidden></p>
+      <p id={statusId} class="subscribe-status" role="status" hidden></p>
+    </form>
+  </div>
+</section>
+
+<script is:inline>
+  (() => {
+    const forms = document.querySelectorAll('[data-subscribe-form]');
+    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    forms.forEach((form) => {
+      if (form.dataset.bound === '1') return;
+      form.dataset.bound = '1';
+
+      const input = form.querySelector('input[type="email"]');
+      const hp = form.querySelector('input[name="website"]');
+      const btn = form.querySelector('button[type="submit"]');
+      const errEl = form.querySelector('.subscribe-error');
+      const statusEl = form.querySelector('.subscribe-status');
+      if (!input || !btn || !errEl || !statusEl) return;
+
+      const defaultLabel = btn.textContent || 'Subscribe';
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        errEl.hidden = true;
+        errEl.textContent = '';
+        input.removeAttribute('aria-invalid');
+
+        const email = (input.value || '').trim();
+        if (!emailRe.test(email)) {
+          input.setAttribute('aria-invalid', 'true');
+          errEl.textContent = "That doesn't look like an email address.";
+          errEl.hidden = false;
+          input.focus();
+          return;
+        }
+
+        if (hp && hp.value) {
+          form.reset();
+          return;
+        }
+
+        btn.disabled = true;
+        btn.setAttribute('aria-busy', 'true');
+        btn.textContent = 'Subscribing…';
+
+        try {
+          const res = await fetch(form.action, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, website: hp ? hp.value : '' }),
+          });
+          const isProdHost = window.location.hostname === 'craftwithintent.com' || window.location.hostname === 'www.craftwithintent.com';
+          if (res.ok || (!isProdHost && (res.status === 404 || res.status === 405))) {
+            input.hidden = true;
+            btn.hidden = true;
+            const lbl = form.querySelector('label');
+            if (lbl) lbl.hidden = true;
+            statusEl.textContent = isProdHost
+              ? "You're in. Check your inbox to confirm."
+              : "You're in. (Staging preview: live delivery activates on craftwithintent.com.)";
+            statusEl.hidden = false;
+            if (window.posthog && typeof window.posthog.capture === 'function') {
+              window.posthog.capture('newsletter_subscribe', { source: form.dataset.source || 'footer' });
+            }
+          } else {
+            throw new Error('Server error');
+          }
+        } catch (_err) {
+          errEl.textContent = 'Something went wrong on our side. Try again in a minute.';
+          errEl.hidden = false;
+          btn.disabled = false;
+          btn.removeAttribute('aria-busy');
+          btn.textContent = defaultLabel;
+        }
+      });
+    });
+  })();
+</script>
+
+<style>
+  .subscribe-band {
+    background: var(--color-dark-canvas);
+    color: var(--color-chalk);
+  }
+  .subscribe-inner {
+    padding-top: var(--space-18);
+    padding-bottom: var(--space-18);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .subscribe-copy {
+    flex: 1 1 440px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .subscribe-eyebrow {
+    font-size: var(--text-meta);
+    letter-spacing: 0.1em;
+    color: var(--color-chalk-tertiary);
+  }
+  .subscribe-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(30px, 3.6vw, 44px);
+    line-height: 1.05;
+    letter-spacing: var(--tracking-display);
+  }
+  .subscribe-desc {
+    margin: 0;
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--color-chalk-secondary);
+    max-width: 34em;
+  }
+  .subscribe-form {
+    flex: 1 1 400px;
+    min-width: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    position: relative;
+  }
+  .subscribe-label {
+    width: 100%;
+    font-size: var(--text-micro);
+    letter-spacing: var(--tracking-meta);
+    color: var(--color-chalk-tertiary);
+  }
+  .subscribe-input {
+    flex: 1 1 220px;
+    min-width: 0;
+    height: 52px;
+    padding: 0 16px;
+    border: 1px solid var(--color-ink-secondary);
+    background: var(--color-dark-field);
+    color: var(--color-chalk);
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+  }
+  .subscribe-input[aria-invalid="true"] {
+    border-color: var(--color-signal);
+  }
+  .subscribe-btn {
+    height: 52px;
+    padding: 0 26px;
+    border: 0;
+    background: var(--color-chalk);
+    color: var(--color-dark-canvas);
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: var(--text-body);
+    cursor: pointer;
+    transition: background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+  }
+  .subscribe-btn:hover { background: #FFFFFF; }
+  .subscribe-btn:active { transform: translateY(1px); }
+  .subscribe-btn:disabled { opacity: 0.7; cursor: wait; }
+
+  .hp-field {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+  .subscribe-error {
+    width: 100%;
+    margin: 2px 0 0;
+    font-size: var(--text-small);
+    color: var(--color-signal);
+  }
+  .subscribe-status {
+    width: 100%;
+    margin: 0;
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--color-chalk);
+  }
+
+  @media (max-width: 767px) {
+    .subscribe-inner {
+      padding-top: var(--space-10);
+      padding-bottom: var(--space-10);
+    }
+    .subscribe-input, .subscribe-btn {
+      flex: 1 1 100%;
+      width: 100%;
+    }
+  }
+</style>

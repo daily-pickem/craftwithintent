@@ -1,0 +1,128 @@
+---
+import StatusTag from './StatusTag.astro';
+import GateLedger from './GateLedger.astro';
+import { url } from '../lib/site';
+import type { ProductItem } from '../data/products';
+
+interface Props {
+  product: ProductItem;
+}
+
+const { product } = Astro.props;
+---
+<div class="product-row">
+  <div class="product-info">
+    <h2 class="product-name">{product.name}</h2>
+    <p class="product-line">{product.oneLiner}</p>
+    <span class="product-by mono">{product.builtBy}</span>
+  </div>
+  <div class="product-status">
+    <StatusTag status={product.status} label={product.statusLabel} />
+    <div class="product-gate">
+      <GateLedger current={product.gate} size="small" />
+      <span class="gate-num mono">GATE {product.gate}</span>
+    </div>
+  </div>
+  <div class="product-actions">
+    {product.primaryCtaUrl && (
+      <a
+        href={product.primaryCtaUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="action-btn is-primary"
+        data-product-outbound={product.slug}
+      >
+        {product.primaryCtaLabel || 'Open'}
+      </a>
+    )}
+    {product.teardownSlug && (
+      <a href={url(`posts/${product.teardownSlug}/`)} class="action-btn is-secondary">
+        Teardown
+      </a>
+    )}
+  </div>
+</div>
+
+<style>
+  .product-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px 32px;
+    padding: var(--space-7) 0;
+    border-top: var(--rule);
+  }
+  .product-info {
+    flex: 999 1 380px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .product-name {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 26px;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  .product-line {
+    margin: 0;
+    font-size: var(--text-body);
+    line-height: 1.5;
+    color: var(--color-ink-secondary);
+  }
+  .product-by {
+    font-size: var(--text-micro);
+    color: var(--color-ink-secondary);
+    letter-spacing: 0.04em;
+  }
+  .product-status {
+    flex: 1 1 180px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .product-gate {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .gate-num {
+    font-size: var(--text-micro);
+    color: var(--color-ink-secondary);
+  }
+  .product-actions {
+    flex: 1 1 200px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .action-btn {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap-min);
+    padding: 0 16px;
+    font-size: var(--text-small);
+    font-weight: 600;
+    text-decoration: none;
+    transition: background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+  }
+  .action-btn:active { transform: translateY(1px); }
+  .action-btn.is-primary {
+    background: var(--color-ink);
+    color: var(--color-canvas);
+  }
+  .action-btn.is-primary:hover {
+    background: #2A2A2A;
+    color: var(--color-canvas);
+  }
+  .action-btn.is-secondary {
+    border: var(--rule-strong);
+    color: var(--color-ink);
+  }
+  .action-btn.is-secondary:hover {
+    background: var(--color-surface);
+    color: var(--color-ink);
+  }
+</style>

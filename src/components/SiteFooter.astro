@@ -1,0 +1,42 @@
+---
+import { url } from '../lib/site';
+---
+<footer class="site-footer">
+  <div class="container footer-inner mono">
+    <span>© 2026 Craft with Intent · Andy · Mike · Awesome</span>
+    <span class="footer-links">
+      <a href={url('rss.xml')}>RSS</a>
+      <a href={url('sitemap.xml')}>Sitemap</a>
+      <a href={url('founders/#charter')}>Honesty charter</a>
+    </span>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--color-dark-canvas);
+    border-top: 1px solid var(--color-dark-rule);
+  }
+  .footer-inner {
+    padding-top: 24px;
+    padding-bottom: 24px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: var(--text-meta);
+    color: var(--color-chalk-tertiary);
+  }
+  .footer-links {
+    display: flex;
+    gap: 18px;
+  }
+  .footer-links a {
+    color: var(--color-chalk-tertiary);
+    text-decoration: none;
+  }
+  .footer-links a:hover {
+    color: var(--color-chalk);
+    text-decoration: underline;
+  }
+</style>

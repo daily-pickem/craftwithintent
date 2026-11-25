@@ -1,0 +1,528 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import DispatchCard from '../components/DispatchCard.astro';
+import {
+  SERIES_LIST,
+  SERIES_MAP,
+  FOUNDERS,
+  GATE_PHASES,
+  calcReadMinutes,
+  formatAuthors,
+  url,
+} from '../lib/site';
+import { PRODUCTS } from '../data/products';
+import { TOOLS } from '../data/tools';
+
+const allPosts = (await getCollection('posts')).sort(
+  (a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime()
+);
+const lead = allPosts.find((p) => p.data.featured) || allPosts[0];
+const dispatches = allPosts.filter((p) => p.slug !== lead.slug);
+const leadSeries = SERIES_MAP[lead.data.series];
+const leadReadMin = calcReadMinutes(lead.body);
+
+const previewProducts = PRODUCTS.slice(0, 2);
+const previewTool = TOOLS[0];
+---
+<BaseLayout
+  title="Craft with Intent — Real AI Craft & Shipped Products"
+  description="Three veteran builders, one public experiment: can real product, design and engineering craft turn AI into products people love, and that pay for themselves?"
+  current="essays"
+  subscribeId="home-email"
+>
+  <section class="hero-section">
+    <div class="container hero-flex">
+      <div class="hero-left">
+        <div class="hero-meta mono">
+          <span class="series-dot" style={`background: ${leadSeries.color}`} />
+          <span>{leadSeries.name.toUpperCase()}</span>
+          <span>·</span>
+          <span>LEAD STORY</span>
+          {lead.data.experimentStatus === 'live' && <span class="live-tag">LIVE EXPERIMENT</span>}
+        </div>
+        <h1 class="hero-title">AI is the tool.<br />Craft is the edge.</h1>
+        <p class="hero-dek">
+          Three veteran builders, one public experiment: can real product, design and engineering craft turn AI into products people love, and that pay for themselves? Watch us try.
+        </p>
+        <div class="hero-byline">
+          <div class="avatar-stack">
+            {lead.data.authors.map((id, idx) => {
+              const f = FOUNDERS[id];
+              return (
+                <span
+                  class:list={['avatar-circle avatar-hero', { 'is-stacked': idx > 0 }]}
+                  style={`background: ${f.avatarBg}`}
+                >
+                  {f.initials}
+                </span>
+              );
+            })}
+          </div>
+          <span class="hero-authors">{formatAuthors(lead.data.authors)}</span>
+          <span class="hero-read mono">{leadReadMin} MIN READ{lead.data.gate ? ` · GATE ${lead.data.gate}` : ''}</span>
+        </div>
+        <div class="hero-ctas">
+          <a href={url(`posts/${lead.slug}/`)} class="btn btn-primary hero-btn">Read the manifesto</a>
+          <a href={url('founders/')} class="btn btn-secondary hero-btn">Meet the builders</a>
+        </div>
+      </div>
+
+      <aside class="gate-panel" aria-label="Four gates framework">
+        <span class="gate-panel-eyebrow mono">HOW EVERY PROJECT IS DOCUMENTED</span>
+        <div class="gate-rows">
+          {GATE_PHASES.map((g, idx) => (
+            <div class:list={['gate-row', { 'has-border': idx < GATE_PHASES.length - 1 }]}>
+              <span class:list={['gate-num mono', { 'is-accent': g.gate === 1 }]}>GATE {g.gate}</span>
+              <span class="gate-desc">
+                <strong>{g.prompt}</strong> <span class="gate-q">{g.question}</span>
+              </span>
+            </div>
+          ))}
+        </div>
+        <p class="gate-closing">Every gate ends with one honest question: how does this make money?</p>
+      </aside>
+    </div>
+  </section>
+
+  <section id="dispatches" class="container dispatches-section">
+    <div class="dispatches-head">
+      <h2 class="section-h2">Latest dispatches</h2>
+      <span id="dispatch-count" class="dispatch-count mono" aria-live="polite">
+        {dispatches.length} {dispatches.length === 1 ? 'DISPATCH' : 'DISPATCHES'}
+      </span>
+    </div>
+
+    <div role="group" aria-label="Filter by series" class="chips-row">
+      <button type="button" class="chip is-selected" data-filter="all" aria-pressed="true">
+        All series
+      </button>
+      {SERIES_LIST.map((s) => (
+        <button type="button" class="chip" data-filter={s.slug} aria-pressed="false" data-dot={s.color}>
+          <span class="series-dot" style={`background: ${s.color}`} />
+          <span>{s.shortLabel}</span>
+        </button>
+      ))}
+    </div>
+
+    <div id="dispatch-grid" class="dispatch-grid">
+      {dispatches.map((post) => (
+        <DispatchCard
+          slug={post.slug}
+          title={post.data.title}
+          dek={post.data.dek}
+          series={post.data.series}
+          gate={post.data.gate}
+          authors={post.data.authors}
+          body={post.body}
+        />
+      ))}
+    </div>
+
+    <div id="dispatch-empty" class="dispatch-empty" hidden>
+      <p>No dispatches in this series yet. Watch this space.</p>
+      <a id="dispatch-empty-link" href={url('series/')} class="empty-link">Explore the series →</a>
+    </div>
+  </section>
+
+  <section class="artifacts-section">
+    <div class="container artifacts-inner">
+      <div class="artifacts-head">
+        <h2 class="section-h2">Real artifacts, not talk</h2>
+        <div class="artifacts-links">
+          <a href={url('products/')} class="artifact-nav-link">All products →</a>
+          <a href={url('tools/')} class="artifact-nav-link">All tools →</a>
+        </div>
+      </div>
+
+      <div class="artifacts-grid">
+        {previewProducts.map((prod) => (
+          <a href={url('products/')} class="artifact-card">
+            <div class="artifact-top mono">
+              <span class="artifact-kind">PRODUCT</span>
+              <span class="artifact-badge">{prod.statusLabel}</span>
+            </div>
+            <span class="artifact-name">{prod.name}</span>
+            <span class="artifact-desc">{prod.oneLiner}</span>
+          </a>
+        ))}
+
+        <a href={url('tools/')} class="artifact-card is-tool">
+          <div class="artifact-top mono">
+            <span class="artifact-kind">WORKBENCH · RECEIPT</span>
+            <span class="artifact-cogs">{previewTool.cogs}</span>
+          </div>
+          <span class="artifact-name">{previewTool.name}</span>
+          <span class="artifact-desc">{previewTool.purpose}</span>
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script is:inline define:vars={{ seriesBase: url('series/') }}>
+  (() => {
+    const chips = Array.from(document.querySelectorAll('.chip[data-filter]'));
+    const cards = Array.from(document.querySelectorAll('#dispatch-grid .dispatch-card'));
+    const countEl = document.getElementById('dispatch-count');
+    const emptyEl = document.getElementById('dispatch-empty');
+    const emptyLink = document.getElementById('dispatch-empty-link');
+    if (!chips.length || !countEl) return;
+
+    const applyFilter = (series, updateUrl, track) => {
+      let visible = 0;
+      cards.forEach((card) => {
+        const match = series === 'all' || card.dataset.series === series;
+        card.hidden = !match;
+        if (match) visible += 1;
+      });
+
+      chips.forEach((chip) => {
+        const on = chip.dataset.filter === series;
+        chip.classList.toggle('is-selected', on);
+        chip.setAttribute('aria-pressed', on ? 'true' : 'false');
+        const dot = chip.querySelector('.series-dot');
+        if (dot && chip.dataset.filter === 'ship-in-a-weekend') {
+          dot.style.background = on ? '#FFFFFF' : (chip.dataset.dot || '#111111');
+        }
+      });
+
+      countEl.textContent = `${visible} ${visible === 1 ? 'DISPATCH' : 'DISPATCHES'}`;
+      if (emptyEl) emptyEl.hidden = visible > 0;
+      if (emptyLink && series !== 'all') {
+        emptyLink.href = `${seriesBase}${series}/`;
+      }
+
+      if (updateUrl) {
+        const u = new URL(window.location.href);
+        if (series === 'all') u.searchParams.delete('series');
+        else u.searchParams.set('series', series);
+        window.history.replaceState({}, '', u.toString());
+      }
+
+      if (track && window.posthog && typeof window.posthog.capture === 'function') {
+        window.posthog.capture('series_filter', { series });
+      }
+    };
+
+    const initial = new URLSearchParams(window.location.search).get('series');
+    if (initial && chips.some((c) => c.dataset.filter === initial)) {
+      applyFilter(initial, false, false);
+    }
+
+    chips.forEach((chip) => {
+      chip.addEventListener('click', () => {
+        applyFilter(chip.dataset.filter || 'all', true, true);
+      });
+    });
+  })();
+</script>
+
+<style>
+  .hero-section {
+    border-bottom: var(--rule-strong);
+  }
+  .hero-flex {
+    padding-top: var(--space-18);
+    padding-bottom: var(--space-16);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-14);
+    align-items: center;
+  }
+  .hero-left {
+    flex: 999 1 560px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+  .hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    font-size: var(--text-meta);
+    letter-spacing: var(--tracking-meta);
+    color: var(--color-ink-secondary);
+  }
+  .hero-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--text-hero);
+    line-height: 0.98;
+    letter-spacing: var(--tracking-display);
+  }
+  .hero-dek {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: var(--text-deck);
+    line-height: 1.3;
+    color: var(--color-ink-secondary);
+    max-width: 30em;
+  }
+  .hero-byline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+  }
+  .avatar-stack {
+    display: flex;
+  }
+  .avatar-hero {
+    width: 36px;
+    height: 36px;
+    font-size: 12px;
+    border: 2px solid var(--color-canvas);
+  }
+  .avatar-hero.is-stacked {
+    margin-left: -10px;
+  }
+  .hero-authors {
+    font-size: 15px;
+    color: var(--color-ink);
+  }
+  .hero-read {
+    font-size: var(--text-meta);
+    color: var(--color-ink-secondary);
+  }
+  .hero-ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 8px;
+  }
+  .hero-btn {
+    height: 52px;
+    padding: 0 26px;
+  }
+
+  .gate-panel {
+    flex: 1 1 340px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: var(--space-7);
+    background: var(--color-surface);
+  }
+  .gate-panel-eyebrow {
+    font-size: var(--text-micro);
+    letter-spacing: 0.1em;
+    color: var(--color-ink-secondary);
+  }
+  .gate-rows {
+    display: flex;
+    flex-direction: column;
+  }
+  .gate-row {
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    gap: 12px;
+    padding: 14px 0;
+  }
+  .gate-row.has-border {
+    border-bottom: var(--rule);
+  }
+  .gate-num {
+    font-size: var(--text-meta);
+    color: var(--color-ink);
+  }
+  .gate-num.is-accent {
+    color: var(--color-accent);
+  }
+  .gate-desc {
+    font-size: 15px;
+    line-height: 1.4;
+  }
+  .gate-q {
+    color: var(--color-ink-secondary);
+  }
+  .gate-closing {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 22px;
+    line-height: 1.25;
+    color: var(--color-ink);
+  }
+
+  .dispatches-section {
+    padding-top: var(--space-14);
+    padding-bottom: var(--space-18);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-7);
+  }
+  .dispatches-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+  }
+  .section-h2 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--text-h2);
+    line-height: 1.15;
+    letter-spacing: var(--tracking-display);
+  }
+  .dispatch-count {
+    font-size: var(--text-meta);
+    color: var(--color-ink-secondary);
+  }
+  .chips-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: var(--tap-min);
+    padding: 0 16px;
+    border: var(--rule);
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    font-size: var(--text-small);
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+  }
+  .chip:hover { background: var(--color-surface); }
+  .chip:active { transform: translateY(1px); }
+  .chip.is-selected {
+    background: var(--color-ink);
+    color: var(--color-canvas);
+    border-color: var(--color-ink);
+  }
+  .dispatch-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 460px), 1fr));
+    column-gap: var(--space-14);
+  }
+  .dispatch-grid :global(.dispatch-card[hidden]) {
+    display: none;
+  }
+  .dispatch-empty {
+    padding: 28px 0;
+    border-top: var(--rule);
+    font-size: var(--text-body);
+    color: var(--color-ink-secondary);
+  }
+  .dispatch-empty p { margin: 0 0 8px; }
+  .empty-link {
+    font-weight: 600;
+    color: var(--color-accent);
+  }
+
+  .artifacts-section {
+    background: var(--color-surface);
+  }
+  .artifacts-inner {
+    padding-top: var(--space-16);
+    padding-bottom: var(--space-16);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-7);
+  }
+  .artifacts-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+  }
+  .artifacts-links {
+    display: flex;
+    gap: 20px;
+  }
+  .artifact-nav-link {
+    font-weight: 600;
+    color: var(--color-accent);
+    text-underline-offset: 4px;
+    padding: 10px 0;
+  }
+  .artifacts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+    gap: 20px;
+  }
+  .artifact-card {
+    background: var(--color-canvas);
+    padding: 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    text-decoration: none;
+    color: var(--color-ink);
+    border: var(--rule);
+  }
+  .artifact-card.is-tool {
+    border: var(--rule-strong);
+  }
+  .artifact-card:hover .artifact-name {
+    color: var(--color-accent);
+  }
+  .artifact-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: var(--text-micro);
+    gap: 8px;
+  }
+  .artifact-kind {
+    color: var(--color-ink-secondary);
+  }
+  .artifact-badge {
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    padding: 4px 8px;
+    background: var(--color-ink);
+    color: var(--color-canvas);
+  }
+  .artifact-cogs {
+    color: var(--color-accent);
+  }
+  .artifact-name {
+    font-family: var(--font-display);
+    font-size: 24px;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    transition: color var(--dur-base) var(--ease);
+  }
+  .artifact-desc {
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--color-ink-secondary);
+  }
+
+  @media (max-width: 767px) {
+    .hero-flex {
+      padding-top: 36px;
+      padding-bottom: 40px;
+      gap: 32px;
+    }
+    .hero-btn {
+      flex: 1 1 100%;
+    }
+    .dispatches-section {
+      padding-top: 40px;
+      padding-bottom: 48px;
+    }
+    .chips-row {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      margin-left: -16px;
+      margin-right: -16px;
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+  }
+</style>

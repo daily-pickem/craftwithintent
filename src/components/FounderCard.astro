@@ -1,0 +1,71 @@
+---
+import type { FounderMeta } from '../lib/site';
+
+interface Props {
+  founder: FounderMeta;
+}
+
+const { founder } = Astro.props;
+---
+<article class="founder-card">
+  <div class="founder-head">
+    <span class="avatar-circle avatar-lg" style={`background: ${founder.avatarBg}`}>{founder.initials}</span>
+    <div class="founder-meta">
+      <h2 class="founder-name">{founder.name}</h2>
+      <span class="founder-role mono">{founder.role.toUpperCase()}</span>
+    </div>
+  </div>
+  <p class="founder-question">{founder.question}</p>
+  <p class="founder-bio">{founder.bio}</p>
+</article>
+
+<style>
+  .founder-card {
+    border-top: 3px solid var(--color-ink);
+    padding-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .founder-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .avatar-lg {
+    width: 64px;
+    height: 64px;
+    font-size: 20px;
+  }
+  .founder-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .founder-name {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 26px;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  .founder-role {
+    font-size: var(--text-meta);
+    letter-spacing: 0.06em;
+    color: var(--color-ink-secondary);
+  }
+  .founder-question {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 24px;
+    line-height: 1.25;
+    color: var(--color-ink);
+  }
+  .founder-bio {
+    margin: 0;
+    font-size: var(--text-body);
+    line-height: 1.6;
+    color: var(--color-ink-secondary);
+  }
+</style>

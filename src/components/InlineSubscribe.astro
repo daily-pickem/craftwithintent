@@ -1,0 +1,90 @@
+---
+import { url } from '../lib/site';
+---
+<form class="inline-subscribe" data-subscribe-form data-source="inline" action={url('api/subscribe')} method="post" novalidate>
+  <label for="post-inline-email" class="inline-label">Get the next dispatch when it ships.</label>
+  <input
+    id="post-inline-email"
+    name="email"
+    type="email"
+    autocomplete="email"
+    placeholder="you@example.com"
+    class="inline-input"
+    aria-describedby="post-inline-error"
+  />
+  <input type="text" name="website" tabindex="-1" autocomplete="off" class="hp-field" aria-hidden="true" />
+  <button type="submit" class="inline-btn">Subscribe</button>
+  <p id="post-inline-error" class="subscribe-error inline-error" hidden></p>
+  <p class="subscribe-status inline-status" role="status" hidden></p>
+</form>
+
+<style>
+  .inline-subscribe {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: flex-end;
+    padding: 24px;
+    background: var(--color-surface);
+    position: relative;
+  }
+  .inline-label {
+    width: 100%;
+    font-weight: 600;
+    font-size: 17px;
+    color: var(--color-ink);
+  }
+  .inline-input {
+    flex: 1 1 220px;
+    min-width: 0;
+    height: 48px;
+    padding: 0 14px;
+    border: var(--rule);
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+  }
+  .inline-input[aria-invalid="true"] {
+    border-color: var(--color-accent);
+  }
+  .inline-btn {
+    height: 48px;
+    padding: 0 22px;
+    border: 0;
+    background: var(--color-ink);
+    color: var(--color-canvas);
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+  }
+  .inline-btn:hover { background: #2A2A2A; }
+  .inline-btn:active { transform: translateY(1px); }
+  .hp-field {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+  .inline-error {
+    width: 100%;
+    margin: 2px 0 0;
+    font-size: var(--text-small);
+    color: var(--color-accent);
+  }
+  .inline-status {
+    width: 100%;
+    margin: 0;
+    font-size: var(--text-body);
+    font-weight: 500;
+    color: var(--color-ink);
+  }
+  @media (max-width: 767px) {
+    .inline-input, .inline-btn {
+      flex: 1 1 100%;
+      width: 100%;
+    }
+  }
+</style>

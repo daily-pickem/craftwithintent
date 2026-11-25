@@ -1,0 +1,60 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CostReceipt from '../components/CostReceipt.astro';
+import { TOOLS } from '../data/tools';
+---
+<BaseLayout
+  title="Expert Workbenches — Craft with Intent"
+  description="Custom solvers, skeletal rig studios, on-device phone bridges, and replay evals built when generic prompting hit a craft wall."
+  current="tools"
+  subscribeId="tools-email"
+>
+  <section class="container tools-hero">
+    <span class="meta-label">BEHIND THE SCENES</span>
+    <h1 class="tools-h1">Expert workbenches.</h1>
+    <p class="tools-intro">
+      When generic prompting hit a craft wall, we built our own tools. Each one comes with a receipt: what it would have cost to buy or build before AI, against what our workbench costs to run.
+    </p>
+  </section>
+
+  <section class="container tools-grid-wrap">
+    <div class="tools-grid">
+      {TOOLS.map((tool) => (
+        <CostReceipt tool={tool} />
+      ))}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .tools-hero {
+    padding-top: var(--space-16);
+    padding-bottom: var(--space-8);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .tools-h1 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--text-display);
+    line-height: 1;
+    letter-spacing: var(--tracking-display);
+  }
+  .tools-intro {
+    margin: 0;
+    font-size: var(--text-body-lg);
+    line-height: 1.65;
+    color: var(--color-ink-secondary);
+    max-width: 62ch;
+  }
+  .tools-grid-wrap {
+    padding-top: var(--space-4);
+    padding-bottom: 80px;
+  }
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+    gap: var(--space-6);
+  }
+</style>

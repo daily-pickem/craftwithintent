@@ -1,0 +1,88 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProductRow from '../components/ProductRow.astro';
+import StatusTag from '../components/StatusTag.astro';
+import { sortedProducts } from '../data/products';
+
+const products = sortedProducts();
+---
+<BaseLayout
+  title="Shipped Products — Craft with Intent"
+  description="Every app, game and utility we built, with an honest status, the gate it has reached, and accurate founder attribution."
+  current="products"
+  subscribeId="products-email"
+>
+  <section class="container products-hero">
+    <span class="meta-label">SHIPPED PRODUCTS LEDGER</span>
+    <h1 class="products-h1">Things we actually shipped.</h1>
+    <p class="products-intro">
+      Every app, game and utility, with an honest status and the gate it has reached. Killed projects stay listed. No vanity metrics, and every credit goes to whoever built it.
+    </p>
+    <div class="status-legend">
+      <StatusTag status="live" label="LIVE · APP STORE / PLAY" />
+      <StatusTag status="beta" label="BETA · INTERNAL / TESTFLIGHT" />
+      <StatusTag status="open-source" label="OPEN SOURCE" />
+      <StatusTag status="killed" label="KILLED / ARCHIVED" />
+    </div>
+  </section>
+
+  <section class="container products-list">
+    {products.map((product) => (
+      <ProductRow product={product} />
+    ))}
+    <div class="list-end" />
+  </section>
+</BaseLayout>
+
+<script is:inline>
+  (() => {
+    document.querySelectorAll('[data-product-outbound]').forEach((el) => {
+      el.addEventListener('click', () => {
+        if (window.posthog && typeof window.posthog.capture === 'function') {
+          window.posthog.capture('product_outbound_click', {
+            product: el.dataset.productOutbound || 'unknown',
+          });
+        }
+      });
+    });
+  })();
+</script>
+
+<style>
+  .products-hero {
+    padding-top: var(--space-16);
+    padding-bottom: var(--space-6);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .products-h1 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--text-display);
+    line-height: 1;
+    letter-spacing: var(--tracking-display);
+  }
+  .products-intro {
+    margin: 0;
+    font-size: var(--text-body-lg);
+    line-height: 1.65;
+    color: var(--color-ink-secondary);
+    max-width: 62ch;
+  }
+  .status-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .products-list {
+    padding-top: var(--space-6);
+    padding-bottom: 80px;
+    display: flex;
+    flex-direction: column;
+  }
+  .list-end {
+    border-top: var(--rule);
+  }
+</style>

@@ -1,0 +1,110 @@
+---
+import {
+  SERIES_MAP,
+  FOUNDERS,
+  calcReadMinutes,
+  formatAuthors,
+  url,
+  type FounderId,
+  type SeriesSlug,
+} from '../lib/site';
+
+interface Props {
+  slug: string;
+  title: string;
+  dek: string;
+  series: SeriesSlug;
+  gate?: number;
+  authors: FounderId[];
+  body: string;
+}
+
+const { slug, title, dek, series, gate, authors, body } = Astro.props;
+const seriesMeta = SERIES_MAP[series];
+const firstAuthor = FOUNDERS[authors[0]];
+const readMin = calcReadMinutes(body);
+const authorLine = formatAuthors(authors, true);
+---
+<a href={url(`posts/${slug}/`)} class="dispatch-card" data-series={series}>
+  <div class="dispatch-meta mono">
+    <span class="series-dot" style={`background: ${seriesMeta.color}`} />
+    <span>{seriesMeta.name.toUpperCase()}{gate ? ` · GATE ${gate}` : ''}</span>
+  </div>
+  <span class="dispatch-title">{title}</span>
+  <span class="dispatch-dek">{dek}</span>
+  <div class="dispatch-byline">
+    <span class="avatar-circle avatar-sm" style={`background: ${firstAuthor.avatarBg}`}>{firstAuthor.initials}</span>
+    <span class="byline-text">
+      {authorLine.includes('·') ? (
+        <>
+          {authorLine.split('·')[0].trim()} · <span class="byline-role">{authorLine.split('·')[1].trim()}</span>
+        </>
+      ) : (
+        authorLine
+      )}
+    </span>
+    <span class="read-time mono">· {readMin} MIN</span>
+  </div>
+</a>
+
+<style>
+  .dispatch-card {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: var(--space-7) 0;
+    border-top: var(--rule);
+    text-decoration: none;
+    color: var(--color-ink);
+  }
+  .dispatch-card:hover .dispatch-title {
+    color: var(--color-accent);
+  }
+  .dispatch-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    font-size: var(--text-micro);
+    letter-spacing: 0.06em;
+    color: var(--color-ink-secondary);
+  }
+  .dispatch-title {
+    font-weight: 600;
+    font-size: var(--text-card-title);
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    transition: color var(--dur-base) var(--ease);
+  }
+  .dispatch-dek {
+    font-size: var(--text-body);
+    line-height: 1.5;
+    color: var(--color-ink-secondary);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .dispatch-byline {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 4px;
+    font-size: var(--text-small);
+  }
+  .avatar-sm {
+    width: 28px;
+    height: 28px;
+    font-size: 10px;
+  }
+  .byline-role {
+    color: var(--color-ink-secondary);
+  }
+  .read-time {
+    font-size: var(--text-micro);
+    color: var(--color-ink-secondary);
+  }
+  @media (max-width: 767px) {
+    .dispatch-title { font-size: 20px; }
+  }
+</style>
