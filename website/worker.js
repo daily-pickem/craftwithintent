@@ -37,6 +37,20 @@ async function handleSubscribe(request, env) {
     return json({ ok: false, error: 'Invalid email address' }, 400);
   }
 
+  const subscribedAt = new Date().toISOString();
+
+  if (env.SUBSCRIBERS_R2) {
+    const key = `craftwithintent/subscribers/${encodeURIComponent(email)}.json`;
+    const existing = await env.SUBSCRIBERS_R2.head(key);
+    if (!existing) {
+      await env.SUBSCRIBERS_R2.put(
+        key,
+        JSON.stringify({ email, subscribedAt, source: payload.source || 'web' }),
+        { httpMetadata: { contentType: 'application/json' } }
+      );
+    }
+  }
+
   if (env.DB) {
     await env.DB.prepare(
       'CREATE TABLE IF NOT EXISTS subscribers (email TEXT PRIMARY KEY, created_at TEXT NOT NULL)'
@@ -44,11 +58,12 @@ async function handleSubscribe(request, env) {
     await env.DB.prepare(
       'INSERT OR IGNORE INTO subscribers (email, created_at) VALUES (?, ?)'
     )
-      .bind(email, new Date().toISOString())
+      .bind(email, subscribedAt)
       .run();
   }
 
   if (env.RESEND_API_KEY) {
+    const fromAddr = env.RESEND_FROM || 'Craft with Intent <dispatch@dailypickgames.com>';
     await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -56,7 +71,8 @@ async function handleSubscribe(request, env) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Craft with Intent <dispatch@craftwithintent.com>',
+        from: fromAddr,
+        reply_to: 'quip@dailypickgames.com',
         to: [email],
         subject: "You're on The Dispatch — Craft with Intent",
         text: "Thanks for joining Craft with Intent. You'll get one email when something ships, breaks, or earns real signal.\n\nhttps://craftwithintent.com",

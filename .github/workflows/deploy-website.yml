@@ -1,4 +1,4 @@
-name: Deploy Craft with Intent Website
+name: Deploy Craft with Intent to Cloudflare
 
 on:
   push:
@@ -9,21 +9,41 @@ on:
       - 'website/**'
       - 'astro.config.mjs'
       - 'package.json'
+      - '.github/workflows/deploy-website.yml'
+  workflow_dispatch: {}
+
+concurrency:
+  group: deploy-website-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: 'npm'
-      - run: npm ci
-      - run: npm run build
-      - run: rm -rf website/site && cp -r dist website/site
-      - uses: cloudflare/wrangler-action@v4
+
+      - name: Install & Build Astro
+        env:
+          ASTRO_TELEMETRY_DISABLED: '1'
+        run: |
+          npm ci
+          npm run build
+          rm -rf website/site
+          cp -r dist website/site
+
+      - name: Deploy craftwithintent.com via Cloudflare Workers
+        uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: website
+          wranglerVersion: "4.152.0"
+          command: deploy
